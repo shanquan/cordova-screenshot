@@ -99,6 +99,61 @@ navigator.screenshot.URI(function(error,res){
 
 add this line ``<preference name="CrosswalkAnimatable" value="true" />`` in config.xml, see [bug](https://crosswalk-project.org/jira/browse/XWALK-2233)
 
+### missing html5 canvas in Android platform
+#### solution1: (not recommend)
+
+set hardwareAccelerated to "false" in AndroidManifest.xml
+
+#### solution2:
+
+show an image insteadof canvas when taking screenshot, for example:
+```
+function convertCanvasToImage(){
+  //if(ionic.Platform.platform()!="android")return;
+  try{
+    var canvasContent = document.querySelector('#canvasGroup');
+    //if(canvasContent.className.indexOf('ng-hide')<0){
+      var canvases = canvasContent.querySelectorAll('canvas');
+      [].slice.call(canvases).forEach(function(cav){
+        var parentNode = cav.parentNode;
+          var image = new Image();
+          image.src = cav.toDataURL();
+          image.height = parentNode.getAttribute('height');
+          image.style.width = "100%";
+          cav.style.display="none";
+          parentNode.appendChild(image);
+      })
+    //}
+  }catch(e){
+    printLog(e.toString());
+  }
+}
+function convertImageToCanvas(){
+  //if(ionic.Platform.platform()!="android")return;
+  var canvasContent = document.querySelector('#canvasGroup');
+  //if(canvasContent.className.indexOf('ng-hide')<0){
+    var canvases = canvasContent.querySelectorAll('canvas');
+    [].slice.call(canvases).forEach(function(cav){
+      var parentNode = cav.parentNode;
+        if(parentNode.lastChild.tagName.toLowerCase()=="img")
+        parentNode.removeChild(parentNode.lastChild);
+        cav.style.display="";
+    })
+  //}
+}
+
+convertCanvasToImage();
+setTimeout(function(){
+	navigator.screenshot.save(function(error,res){
+		convertImageToCanvas();
+		if(error){
+		    console.error(error);
+		  }else{
+		    console.log('ok',res.filePath);
+		  }
+	},'jpg',50);
+},300);
+```
 
 License
 =========
