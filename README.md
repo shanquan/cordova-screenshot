@@ -107,7 +107,7 @@ set hardwareAccelerated to "false" in AndroidManifest.xml
 #### solution2:
 
 show an image insteadof canvas when taking screenshot, for example:
-```
+```js
 function convertCanvasToImage(){
   //if(ionic.Platform.platform()!="android")return;
   try{
