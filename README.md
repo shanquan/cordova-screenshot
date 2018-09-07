@@ -116,12 +116,14 @@ function convertCanvasToImage(){
       var canvases = canvasContent.querySelectorAll('canvas');
       [].slice.call(canvases).forEach(function(cav){
         var parentNode = cav.parentNode;
-          var image = new Image();
+	if(cav.nextSibling==null){
+	  var image = new Image();
           image.src = cav.toDataURL();
           image.height = parentNode.getAttribute('height');
           image.style.width = "100%";
           cav.style.display="none";
           parentNode.appendChild(image);
+	}
       })
     //}
   }catch(e){
